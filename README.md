@@ -1,5 +1,8 @@
 # Impressão 3D – Carros em Kit Card
 
+> ## ⚠️ NÃO IMPRIMIR ESTA VERSÃO (v1)
+> O `.3mf` da v1 foi gerado com um G-code de início/fim/troca de filamento que **não é o da A1 mini** (tinha movimentos até Y265, fora da mesa de 180 mm) e com a mesa "Cool Plate". A plaquinha de teste da v1 também tinha os 5 furos sobrepostos. Os dois arquivos foram removidos. A versão corrigida está sendo feita na branch `v2`.
+
 Miniaturas de carros no estilo **kit card**: todas as peças saem impressas presas numa moldura, como os antigos kits de plastimodelismo. É só destacar e montar, sem cola na maior parte das peças.
 
 Primeiro modelo: **VW Gol 1980 (1ª geração), vermelho, escala 1:32** (~12 cm), feito para a **Bambu Lab A1 mini + AMS lite**.
