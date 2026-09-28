@@ -3,20 +3,19 @@
 Fatia no Bambu Studio (linha de comando) com os perfis OFICIAIS da A1 mini e
 confere cada resultado. Falha (codigo 1) se qualquer checagem nao passar.
 
-  1) saida/teste_folgas_A1mini.3mf   (cupom, 1 cor - imprimir primeiro)
-  2) saida/gol_kitcard_A1mini.3mf    (cartao, 4 cores)
-
-Uso:  python fatiar.py
-Pre-requisitos: python bambu_perfis.py ; blender -b -P gol_kitcard.py ; blender -b -P teste_folgas.py
+Uso:
+  python fatiar.py cupom        -> calibracao/teste_folgas_A1mini.3mf  (1 cor, imprimir primeiro)
+  python fatiar.py <carro>      -> carros/<carro>/saida/kitcard_A1mini.3mf  (4 cores)
+Pre-requisitos: python bambu_perfis.py e a geracao no Blender (ver gerar.ps1).
 """
-import hashlib, json, os, re, subprocess, sys, zipfile
+import hashlib, json, os, re, shutil, subprocess, sys, tempfile, zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, "saida")
+OUT = None   # definido em main()
 CFG = os.path.join(HERE, "bambu_cfg")
 BAMBU = r"C:\Program Files\Bambu Studio\bambu-studio.exe"
 BBL = r"C:\Program Files\Bambu Studio\resources\profiles\BBL"
-CARD_STLS = ["gol_card_1_vermelho.stl", "gol_card_2_preto.stl", "gol_card_3_prata.stl", "gol_card_4_branco.stl"]
+CARD_STLS = ["card_1_vermelho.stl", "card_2_preto.stl", "card_3_prata.stl", "card_4_branco.stl"]
 BED = 180.0
 TOWER_W = 30.0
 # Na linha de comando o Bambu reserva ~35 mm para a torre (estimativa conservadora).
@@ -26,24 +25,30 @@ def sha(p):
     return hashlib.sha256(open(p, "rb").read()).hexdigest()
 
 def slice_(stls, ids, out3mf, proc_extra):
+    """Fatia numa pasta temporaria de caminho CURTO: o Bambu Studio falha se algum caminho
+    (incluindo os temporarios dele) passar de 260 caracteres no Windows."""
     proc = json.load(open(os.path.join(CFG, "process.json"), encoding="utf-8"))
     proc["brim_type"] = "no_brim"      # a moldura ja da base larga; o cartao vai ate a borda da mesa
     proc.update(proc_extra)
-    tmp = os.path.join(OUT, "_process_fatiamento.json")
-    json.dump(proc, open(tmp, "w", encoding="utf-8"), indent=1)
-    fil = ";".join(f"../bambu_cfg/f{i}.json" for i in range(1, 5))
-    cmd = [BAMBU, "--slice", "0", "--arrange", "0"] + (["--assemble"] if len(stls) > 1 else []) + [
-        "--load-settings", f"../bambu_cfg/machine.json;{os.path.basename(tmp)}",
-        "--load-filaments", fil, "--load-filament-ids", ids,
-        "--outputdir", ".", "--export-3mf", out3mf] + stls
-    r = subprocess.run(cmd, cwd=OUT, capture_output=True, text=True, errors="ignore")
-    os.remove(tmp)
-    p = os.path.join(OUT, "plate_1.gcode")
-    if os.path.exists(p):
-        os.remove(p)
-    if r.returncode != 0 or not os.path.exists(os.path.join(OUT, out3mf)):
-        msg = [l.split("error_message=")[-1] for l in (r.stdout + r.stderr).splitlines() if "error_message" in l]
-        sys.exit(f"FATIAMENTO FALHOU ({out3mf}): {msg[:1]}")
+    work = os.path.realpath(tempfile.mkdtemp(prefix="kc_"))
+    try:
+        for f in ["machine.json"] + [f"f{i}.json" for i in range(1, 5)]:
+            shutil.copy(os.path.join(CFG, f), work)
+        for s in stls:
+            shutil.copy(os.path.join(OUT, s), work)
+        json.dump(proc, open(os.path.join(work, "process.json"), "w", encoding="utf-8"), indent=1)
+        cmd = [BAMBU, "--slice", "0", "--arrange", "0"] + (["--assemble"] if len(stls) > 1 else []) + [
+            "--load-settings", "machine.json;process.json",
+            "--load-filaments", ";".join(f"f{i}.json" for i in range(1, 5)), "--load-filament-ids", ids,
+            "--outputdir", ".", "--export-3mf", out3mf] + stls
+        r = subprocess.run(cmd, cwd=work, capture_output=True, text=True, errors="ignore")
+        res = os.path.join(work, out3mf)
+        if r.returncode != 0 or not os.path.exists(res):
+            msg = [l.split("error_message=")[-1] for l in (r.stdout + r.stderr).splitlines() if "error_message" in l]
+            sys.exit(f"FATIAMENTO FALHOU ({out3mf}): {msg[:1]}")
+        shutil.copy(res, os.path.join(OUT, out3mf))
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
 
 def verify(out3mf, stls):
     path3mf = os.path.join(OUT, out3mf)
@@ -119,18 +124,25 @@ def verify(out3mf, stls):
                 sha256={os.path.basename(p): sha(p) for p in [path3mf] + [os.path.join(OUT, s) for s in stls]})
 
 def main():
-    card = json.load(open(os.path.join(OUT, "cartao.json"), encoding="utf-8"))
-    cw, ch = card["cartao_mm"]
-    if ch + 3.7 + 35 > BED:
-        sys.exit(f"cartao alto demais ({ch:.1f} mm): nao sobra espaco para a torre de purga")
-    reps = []
-    # 1) cupom (1 cor, vermelho, sem torre)
-    slice_(["teste_folgas.stl"], "1", "teste_folgas_A1mini.3mf", {"enable_prime_tower": "0"})
-    reps.append(verify("teste_folgas_A1mini.3mf", ["teste_folgas.stl"]))
-    # 2) cartao 4 cores; torre atras do cartao, a esquerda (longe da zona reservada)
-    slice_(CARD_STLS, "1,2,3,4", "gol_kitcard_A1mini.3mf",
-           {"prime_tower_width": str(int(TOWER_W)), "wipe_tower_x": ["10"], "wipe_tower_y": [str(round(ch + 3.7, 1))]})
-    reps.append(verify("gol_kitcard_A1mini.3mf", CARD_STLS))
+    global OUT
+    alvo = sys.argv[1] if len(sys.argv) > 1 else sys.exit("uso: python fatiar.py cupom | <carro>")
+    if alvo == "cupom":
+        OUT = os.path.join(HERE, "calibracao")
+        slice_(["teste_folgas.stl"], "1", "teste_folgas_A1mini.3mf", {"enable_prime_tower": "0"})
+        reps = [verify("teste_folgas_A1mini.3mf", ["teste_folgas.stl"])]
+    else:
+        OUT = os.path.join(HERE, "carros", alvo, "saida")
+        card = json.load(open(os.path.join(OUT, "cartao.json"), encoding="utf-8"))
+        cw, ch = card["cartao_mm"]
+        if ch + 3.7 + 35 > BED:
+            sys.exit(f"cartao alto demais ({ch:.1f} mm): nao sobra espaco para a torre de purga")
+        # torre atras do cartao, a esquerda (longe da zona reservada x>156, y>152)
+        slice_(CARD_STLS, "1,2,3,4", "kitcard_A1mini.3mf",
+               {"prime_tower_width": str(int(TOWER_W)), "wipe_tower_x": ["10"],
+                "wipe_tower_y": [str(round(ch + 3.7, 1))]})
+        reps = [verify("kitcard_A1mini.3mf", CARD_STLS)]
+        z = zipfile.ZipFile(os.path.join(OUT, "kitcard_A1mini.3mf"))
+        open(os.path.join(OUT, "bambu_placa.png"), "wb").write(z.read("Metadata/plate_1.png"))
     rep = dict(perfis=dict(maquina="Bambu Lab A1 mini 0.4 nozzle", processo="0.20mm Standard @BBL A1M",
                            filamento="Bambu PLA Basic @BBL A1M", mesa="Textured PEI Plate"),
                resultados=reps,
@@ -141,8 +153,6 @@ def main():
         print(f"{r['arquivo']}: {r['status']} | {c['tempo_estimado_fatiador']} | g {c['peso_g_por_filamento_fatiador']}"
               f" | trocas {c['trocas_de_cor']} | start {c['start_gcode_linhas_fixas_do_template_oficial_em_ordem']}"
               f" | xy {c['trajetorias_impressao_xy_min']}..{c['trajetorias_impressao_xy_max']} {r['erros']}")
-    z = zipfile.ZipFile(os.path.join(OUT, "gol_kitcard_A1mini.3mf"))
-    open(os.path.join(OUT, "bambu_placa.png"), "wb").write(z.read("Metadata/plate_1.png"))
     if any(r["erros"] for r in reps):
         sys.exit(1)
 

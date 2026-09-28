@@ -1,0 +1,135 @@
+{
+ "cartao_mm": [
+  172.0,
+  138.83
+ ],
+ "origem_na_mesa_mm": [
+  4.0,
+  0
+ ],
+ "pecas": [
+  "carroceria",
+  "roda_diant_E",
+  "roda_diant_D",
+  "eixo_diant",
+  "roda_tras_E",
+  "roda_tras_D",
+  "eixo_tras",
+  "parabrisa",
+  "bancos",
+  "encosto_E",
+  "encosto_D",
+  "capota_recolhida",
+  "grade_motor",
+  "farol_E",
+  "lanterna_E",
+  "parachoque_diant_E",
+  "parachoque_tras_E",
+  "farol_D",
+  "lanterna_D",
+  "parachoque_diant_D",
+  "parachoque_tras_D",
+  "placa_diant",
+  "placa_tras",
+  "plaquinha",
+  "pezinho"
+ ],
+ "validacao": [
+  {
+   "arquivo": "card_1_vermelho.stl",
+   "triangulos": 56188,
+   "cascas": 3,
+   "arestas_nao_manifold": 0,
+   "arestas_mal_orientadas": 0,
+   "triangulos_degenerados": 0,
+   "caixa_mm": [
+    172.0,
+    138.83,
+    21.71
+   ],
+   "min_mm": [
+    4.0,
+    0.0,
+    0.0
+   ],
+   "max_mm": [
+    176.0,
+    138.83,
+    21.71
+   ],
+   "ok": true
+  },
+  {
+   "arquivo": "card_2_preto.stl",
+   "triangulos": 14616,
+   "cascas": 22,
+   "arestas_nao_manifold": 0,
+   "arestas_mal_orientadas": 0,
+   "triangulos_degenerados": 0,
+   "caixa_mm": [
+    162.28,
+    129.23,
+    5.47
+   ],
+   "min_mm": [
+    8.86,
+    4.8,
+    0.0
+   ],
+   "max_mm": [
+    171.14,
+    134.03,
+    5.47
+   ],
+   "ok": true
+  },
+  {
+   "arquivo": "card_3_prata.stl",
+   "triangulos": 5992,
+   "cascas": 10,
+   "arestas_nao_manifold": 0,
+   "arestas_mal_orientadas": 0,
+   "triangulos_degenerados": 0,
+   "caixa_mm": [
+    107.18,
+    65.1,
+    5.47
+   ],
+   "min_mm": [
+    61.01,
+    41.27,
+    0.0
+   ],
+   "max_mm": [
+    168.19,
+    106.38,
+    5.47
+   ],
+   "ok": true
+  },
+  {
+   "arquivo": "card_4_branco.stl",
+   "triangulos": 336,
+   "cascas": 4,
+   "arestas_nao_manifold": 0,
+   "arestas_mal_orientadas": 0,
+   "triangulos_degenerados": 0,
+   "caixa_mm": [
+    24.6,
+    52.28,
+    1.2
+   ],
+   "min_mm": [
+    146.13,
+    62.36,
+    0.0
+   ],
+   "max_mm": [
+    170.74,
+    114.64,
+    1.2
+   ],
+   "ok": true
+  }
+ ]
+}

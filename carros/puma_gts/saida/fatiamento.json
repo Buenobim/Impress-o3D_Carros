@@ -1,0 +1,74 @@
+{
+ "perfis": {
+  "maquina": "Bambu Lab A1 mini 0.4 nozzle",
+  "processo": "0.20mm Standard @BBL A1M",
+  "filamento": "Bambu PLA Basic @BBL A1M",
+  "mesa": "Textured PEI Plate"
+ },
+ "resultados": [
+  {
+   "arquivo": "kitcard_A1mini.3mf",
+   "status": "ok",
+   "erros": [],
+   "bambu_studio": "02.05.00.66",
+   "checagens": {
+    "start_gcode_linhas_fixas_do_template_oficial_em_ordem": "334/334",
+    "printer_model": "Bambu Lab A1 mini",
+    "printable_area": [
+     "0x0",
+     "180x0",
+     "180x180",
+     "0x180"
+    ],
+    "curr_bed_type": "Textured PEI Plate",
+    "zona_reservada_head_wrap": [
+     "156x152",
+     "180x152",
+     "180x180",
+     "156x180"
+    ],
+    "M190_temperatura_mesa": [
+     "65"
+    ],
+    "trajetorias_impressao_xy_min": [
+     4.21,
+     0.21
+    ],
+    "trajetorias_impressao_xy_max": [
+     175.79,
+     172.22
+    ],
+    "cargas_de_filamento_M620": 51,
+    "trocas_de_cor": 50,
+    "tempo_estimado_fatiador": "3h 23m 49s",
+    "peso_g_por_filamento_fatiador": "46.50,13.73,5.30,1.71",
+    "cores_por_faixa_de_camadas": [
+     {
+      "filamentos": "0 1 2 3",
+      "camadas": "0 5"
+     },
+     {
+      "filamentos": "0 1 2",
+      "camadas": "6 12,23 26"
+     },
+     {
+      "filamentos": "0 1",
+      "camadas": "13 22"
+     },
+     {
+      "filamentos": "0",
+      "camadas": "27 107"
+     }
+    ]
+   },
+   "sha256": {
+    "kitcard_A1mini.3mf": "9fda1febbe19c94a37b42e1715844d6e8692f8f3c7837007dcfa4205ae60872e",
+    "card_1_vermelho.stl": "d0d473d2105aebf36860e145fe84c6ec68f2d2ec45abe1681b41827d8974c775",
+    "card_2_preto.stl": "029a468e987f4f4ba9240474bdc2828448126479bb382ff606b20ab8752152f9",
+    "card_3_prata.stl": "cd6f6ad50acbd201b19fd39af4502ccc8e42a4a520963599e8edfcdbade86289",
+    "card_4_branco.stl": "a055e823c7e8b65c133038b35276bfdd6b4a1edf6e48ecaceae81be2a2a26c29"
+   }
+  }
+ ],
+ "observacao": "Estimativas do fatiador; NAO sao medicoes de impressao fisica."
+}

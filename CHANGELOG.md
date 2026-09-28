@@ -1,5 +1,36 @@
 # Changelog
 
+## Molde + Puma GTS — 28/09/2026 (branch `molde-puma`)
+
+**Repositório virou um molde para vários carros**
+- **Motor comum** em `kitcard/`: `nucleo.py` com geometria, booleanos, cartão, validação e renders.
+- **Folgas e cores** em `fabricacao.py`, compartilhadas por todos os carros e calibradas uma vez pelo cupom.
+- **Cada carro** fica em `carros/<carro>/`.
+- **Execução:** `gerar.ps1 <carro>` e `fatiar.py <carro>|cupom`.
+- **Documentação do molde:**
+  - `CLAUDE.md`: fluxo, interface do carro, portões e regras aprendidas;
+  - `PROMPT_NOVO_CARRO.md`: formulário para pedir um carro novo.
+- **Gol reorganizado** em `carros/gol_1980`. Os STLs gerados pelo motor novo são **idênticos byte a byte** aos da v2, e o fatiamento dá o mesmo resultado (3h17, 334/334).
+
+**Robustez do motor**
+- **Booleanos:** se um corte abrir a malha, o núcleo repete com o cortador levemente girado.
+- **Fatiamento:** agora numa pasta temporária curta, porque caminhos acima de 260 caracteres quebravam o Bambu Studio.
+- **Blender:** roda com `--python-exit-code 1`, para que erros interrompam o `gerar.ps1`.
+- **Cartão alto demais:** o gerador lista as linhas, para mostrar onde otimizar.
+- **Novas funções genéricas:** `loft_closed`, `offset_polyline`, `band_prism` e `teardrop_hole_y`.
+
+**Puma GTS conversível (novo)**
+- **Arquitetura B:** carroceria inteiriça impressa em pé, com cockpit aberto. Com duas metades, o cockpit viraria balanço.
+- **25 peças:**
+  - rodas de liga (6 janelas) e eixos passantes;
+  - base dos bancos e 2 encostos deitados;
+  - moldura do para-brisa com pernas encaixadas;
+  - capota recolhida e grade do motor;
+  - faróis, lanternas e placas;
+  - 4 lâminas de para-choque;
+  - plaquinha.
+- **Encostos separados e deitados:** 120 → 50 trocas de cor e 5h29 → 3h24 (fatiador).
+
 ## v2 — 27/09/2026 (branch `v2`)
 
 Resposta à auditoria "Gol V2" (relatório externo). Cada item: problema → o que mudou → como foi verificado.
