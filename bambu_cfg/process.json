@@ -86,7 +86,7 @@
  "pre_start_fan_time": [
   "0"
  ],
- "prime_tower_width": "30",
+ "prime_tower_width": "35",
  "print_sequence": "by layer",
  "print_settings_id": "",
  "prime_tower_brim_width": "3",
@@ -273,10 +273,5 @@
  "compatible_printers": [
   "Bambu Lab A1 mini 0.4 nozzle"
  ],
- "wipe_tower_x": [
-  "142"
- ],
- "wipe_tower_y": [
-  "142"
- ]
+ "curr_bed_type": "Textured PEI Plate"
 }
