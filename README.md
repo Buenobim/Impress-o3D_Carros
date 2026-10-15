@@ -1,173 +1,168 @@
 # Impressão 3D – Carros em Kit Card
 
-> ## ⚠️ NÃO IMPRIMIR ESTA VERSÃO (v1)
-> O `.3mf` da v1 foi gerado com um G-code de início/fim/troca de filamento que **não é o da A1 mini** (tinha movimentos até Y265, fora da mesa de 180 mm) e com a mesa "Cool Plate". A plaquinha de teste da v1 também tinha os 5 furos sobrepostos. Os dois arquivos foram removidos. A versão corrigida está sendo feita na branch `v2`.
+Miniaturas de carros no estilo **kit card**: todas as peças saem impressas presas numa moldura, como os antigos kits de plastimodelismo. Você destaca e monta.
 
-Miniaturas de carros no estilo **kit card**: todas as peças saem impressas presas numa moldura, como os antigos kits de plastimodelismo. É só destacar e montar, sem cola na maior parte das peças.
+**Modelo atual:** VW **Gol 1300 L 1980** (1ª geração), vermelho, **escala 1:32** (118 mm). Projetado para a **Bambu Lab A1 mini + AMS lite**, com bico 0,4 e mesa texturizada.
 
-Primeiro modelo: **VW Gol 1980 (1ª geração), vermelho, escala 1:32** (~12 cm), feito para a **Bambu Lab A1 mini + AMS lite**.
+> **Status v2: protótipo digital, ainda não impresso.**
+> Perfis, G-code e malhas foram verificados automaticamente (detalhes em [VALIDACAO.md](VALIDACAO.md)). Encaixes, acabamento e aparência real **só serão confirmados na impressão física**. A v1 não foi liberada e está preservada só no histórico (tag `v1-nao-liberada`).
 
 | Montado | Traseira |
 |---|---|
 | ![Gol montado](saida/render_montado_34.png) | ![Gol traseira](saida/render_montado_traseira.png) |
 
-| O cartão como sai da impressora | Vista de cima do cartão |
+| Vista lateral (ortográfica) | Vista frontal (ortográfica) |
 |---|---|
-| ![Cartão 3/4](saida/render_cartao_34.png) | ![Cartão topo](saida/render_cartao_topo.png) |
+| ![Lateral](saida/orto_lado.png) | ![Frente](saida/orto_frente.png) |
 
-> **Status: versão 1, ainda não impressa.** Falta imprimir a plaquinha de teste de folgas e o primeiro cartão para validar os encaixes.
+| Cartão | Vista explodida | Raio-X: pinos e eixos |
+|---|---|---|
+| ![Cartão](saida/render_cartao_34.png) | ![Explodida](saida/render_explodida.png) | ![Raio-X](saida/render_raiox_pinos_eixos.png) |
 
 ---
 
-## Para imprimir (atalho)
+## Para imprimir
 
-1. Imprima **[`saida/teste_folgas.stl`](saida/teste_folgas.stl)** (1 cor, ~10 min). Veja em qual furo (10, 15, 20, 25 ou 30) o pino entra **firme, com pressão de dedo**. Esse número, dividido por 100, vai em `HOLE_EXTRA` no `gol_kitcard.py` (o padrão é 0,20).
-2. Abra **[`saida/gol_kitcard_A1mini.3mf`](saida/gol_kitcard_A1mini.3mf)** no Bambu Studio. Ele já vem fatiado e com as cores atribuídas.
-3. Configure os slots do AMS assim:
+**Antes de começar, confirme o equipamento:**
+- impressora A1 mini com bico 0,4;
+- mesa **Textured PEI**;
+- PLA Basic nos slots do AMS: 1 vermelho, 2 preto, 3 prata, 4 branco.
 
-| Slot | Cor | Peças |
+Se algo for diferente, abra os STLs num projeto novo com o seu perfil em vez de usar os `.3mf` prontos.
+
+1. **Cupom de calibração:** imprima [`saida/teste_folgas_A1mini.3mf`](saida/teste_folgas_A1mini.3mf) (1 cor, ~23 min, ~6 g). Ele tem 4 testes:
+
+| Teste | Como ler | Parâmetro no `gol_kitcard.py` |
 |---|---|---|
-| 1 | Vermelho | carroceria, moldura, plaquinha, pinos, lanternas |
-| 2 | Preto | pneus, vidros, frente, painel traseiro, para-choques |
-| 3 | Prata | calotas, frisos da grade, face dos para-choques |
-| 4 | Branco | faróis e placas |
+| 7 furos (10 a 40 = +0,10 a +0,40 mm no **diâmetro**) | furo onde o pino entra **firme** com o dedo | `HOLE_EXTRA` e `AXLE_WHEEL_EXTRA` |
+| | furo onde o pino **gira livre**, sem folga visível | `AXLE_BODY_EXTRA` |
+| 3 rebaixos (0,10 / 0,15 / 0,20 mm **por lado**) + plaquinha | o menor em que a plaquinha entra sem forçar | `PLATE_CLR` |
+| 3 pontos de destaque (0,6 / 0,8 / 1,0 mm) | o que solta limpo, sem arrancar material | `GATE_W` |
+| 3 vincos (0,35 / 0,45 / 0,55 mm) | o mais fino que aparece bem | `GROOVE_W` |
 
-**Estimativa do Bambu Studio** (PLA Basic, 0,20 mm Standard, mesa texturizada):
-
-| | |
-|---|---|
-| Tempo | **2h47** |
-| Filamento | **~76 g** (65 g vermelho, 9,4 g preto, 0,7 g prata, 0,7 g branco) |
-| Trocas de cor | 30 |
-| Tamanho do cartão | 172 × 135 mm (sobra espaço para a torre de purga na A1 mini) |
+2. **Regere o modelo:** ajuste os valores no topo do `gol_kitcard.py` e rode `.\gerar_tudo.ps1`.
+3. **Imprima o cartão:** [`saida/gol_kitcard_A1mini.3mf`](saida/gol_kitcard_A1mini.3mf). O fatiador estima **3h17** e **~80 g** (66 g vermelho, 10 g preto, 2 g prata, 2 g branco), com **35 trocas de cor**. São estimativas, não medições.
 
 ---
 
 ## Como foi feito
 
-### 1. Pesquisa
+### Pesquisa
 
-**Referência de estilo:** um kit card do B-17 Flying Fortress. Dele vieram as ideias da fuselagem dividida em duas metades deitadas sobre a face de corte, das peças presas por canais e pontos de destaque e da plaquinha com o nome.
+**Exemplar de referência:** o **Gol 1300 L 1980 vermelho da Garagem Volkswagen**, o primeiro Gol "placa preta". Fotos oficiais de frente e traseira estão em [VW News](https://www.vwnews.com.br/news/2699).
 
-**Medidas do carro real** (VW Gol L 1.3, 1980, [ficha técnica](https://www.fichacompleta.com.br/en/carros/volkswagen/gol-l-1-3-1980)):
+Todas as fontes, com o nível de confiança e o que foi usado de cada uma, estão em [`referencias/manifesto.csv`](referencias/manifesto.csv). As fotos de terceiros **não** estão no repositório nem podem ir para anúncios.
 
-| Medida | Real | Na escala 1:32 |
+**Linha do tempo, para não misturar versões:**
+- **1980:** faróis retangulares pequenos, lanternas pequenas nos cantos, para-choques cromados com pontas de borracha.
+- **1985:** frente do Voyage, com faróis maiores e luz de direção.
+- **1987:** reestilização (faróis, grade, lanternas, para-choques e rodas).
+- **1994:** 2ª geração, a "bolinha".
+
+**Medidas** (Gol L 1.3 1980, [ficha técnica, fonte secundária](https://www.fichacompleta.com.br/en/carros/volkswagen/gol-l-1-3-1980)). Nenhum desenho de fábrica foi encontrado, então estes números carregam essa incerteza:
+
+| Medida | Real | 1:32 |
 |---|---|---|
 | Comprimento | 3790 mm | 118,4 mm |
 | Largura | 1601 mm | 50,0 mm |
 | Altura | 1375 mm | 43,0 mm |
 | Entre-eixos | 2358 mm | 73,7 mm |
 | Bitola dianteira / traseira | 1350 / 1366 mm | 42,2 / 42,7 mm |
-| Vão livre do solo | 145 mm | 4,5 mm |
-| Pneu 155/80 R13 (Ø ≈ 578 mm) | 155 mm de largura | Ø 18,1 × 4,8 mm |
+| Pneu 155/80 R13 | Ø 578 × 155 mm | Ø 18,1 × 4,8 mm |
 
-**Impressora** ([especificações A1 mini](https://bambulab.com/en/a1-mini/tech-specs)): mesa de 180 × 180 × 180 mm e AMS lite de 4 cores. Isso limitou o cartão a no máximo ~172 mm de largura, deixando espaço para a torre de purga.
+**Proporções estimadas a partir das fotos:**
+- balanço dianteiro ~930 mm e traseiro ~500 mm (o motor longitudinal fica à frente do eixo);
+- para-brisa da cota 1300 à 1850 (a partir da frente da carroceria);
+- teto até ~3060;
+- tampa traseira a ~38°.
 
-**Formas que não constam na ficha técnica** (perfil lateral, inclinação do para-brisa e da tampa traseira, largura do teto, posição das portas e janelas): estimadas a partir de fotos do Gol "bola" de 1ª geração, com as medidas oficiais como base.
+### Software (gratuito)
 
-### 2. Software usado (tudo gratuito)
-
-| Software | Versão | Para quê |
+| Software | Versão | Uso |
 |---|---|---|
-| **Blender** | 5.0.1 | Modelagem 3D. Roda **em segundo plano por script Python**, sem abrir a interface |
-| **Python + NumPy** | o que vem com o Blender | Cálculo do perfil, das seções e das peças |
-| **Bambu Studio** | 2.05 | Fatiamento pela linha de comando: gera o `.3mf` com as cores e as estimativas de tempo e peso |
-| Motor booleano **Manifold** | embutido no Blender 5 | Cortes (furos, rebaixos, vincos) sempre com malhas fechadas e prontas para imprimir |
+| Blender | 5.0.1 | Modelagem **por script Python**, sem abrir a interface. Booleanos com o motor **Manifold** |
+| Python + NumPy | o que vem com o Blender / 3.12 | Geometria, validação de malha e verificação do G-code |
+| Bambu Studio | 2.05.00.66 | Fatiamento por linha de comando, com os perfis oficiais da A1 mini |
 
-**Por que por script, e não modelando com o mouse:**
-- **Medidas exatas:** folgas, espessuras e encaixes ficam com precisão de décimo de milímetro.
-- **Ajuste rápido:** mudar a escala, a folga dos pinos ou o texto da plaquinha é trocar um número no topo do arquivo e rodar de novo.
-- **Tudo regenerado junto:** o mesmo script gera as peças, monta o cartão, cria os pontos de destaque, confere se as malhas estão fechadas, exporta os STL e faz os renders.
+### Como o modelo é construído ([`gol_kitcard.py`](gol_kitcard.py))
 
-### 3. Como o modelo é construído (`gol_kitcard.py`)
+O script é dividido em seções: referência do veículo, fabricação, geometria, carroceria, peças, cartão, exportação/validação e render.
 
-1. **Perfil lateral:** uma linha poligonal com os pontos-chave (bico, capô, base e topo do para-brisa, teto, vidro traseiro, traseira), com os cantos arredondados.
-2. **Seções transversais:** a cada 1 cm do carro real (366 seções), o script calcula a meia-seção da carroceria:
-   - assoalho;
-   - lateral com a curva de baixo;
-   - linha de cintura;
-   - janelas inclinadas para dentro ("tumblehome");
-   - canto arredondado;
-   - teto levemente abaulado.
-3. **Loft:** as seções são costuradas numa malha sólida. Só a metade esquerda é modelada; a direita é o espelho dela.
-4. **Detalhes por corte booleano:**
-   - caixas de roda e furos dos eixos;
-   - furos dos pinos na face de corte;
-   - rebaixos para o para-brisa, o vidro traseiro, os vidros laterais, a frente, o painel traseiro e os para-choques;
-   - vincos das portas, friso lateral e maçaneta, que acompanham a curvatura da lateral.
-5. **Peças avulsas:**
-   - 4 rodas (pneu preto e calota prata com anel);
+1. **Carroceria:** perfil lateral com cantos arredondados e 370 seções transversais (assoalho, lateral, linha de cintura, janelas inclinadas, teto abaulado) costuradas num sólido. Só a metade esquerda é modelada; a direita é o espelho.
+2. **Cortes:**
+   - caixas de roda e eixo passante;
+   - furos dos pinos;
+   - rebaixos dos vidros, da frente, do painel traseiro e dos para-choques;
+   - vincos das portas, do capô, do friso lateral, da soleira e da maçaneta.
+3. **Peças:**
+   - 4 rodas de aço (pneu com sulcos, aro, prato, 8 fendas, cubo) e 2 eixos;
    - 6 vidros;
-   - frente (grade preta, faróis brancos, frisos prata);
-   - painel traseiro (lanternas vermelhas, placa branca);
+   - frente (faróis com aro, grade com frisos);
+   - painel traseiro (lanternas, placa);
    - 2 para-choques;
-   - plaquinha "GOL 1980" com pezinho;
-   - 7 pinos.
-6. **Cartão:**
-   - As peças são giradas para a posição de impressão e distribuídas em linhas (as pequenas são empilhadas).
-   - O script cria a moldura, as barras e os pontos de destaque (0,8 × 0,8 mm). A posição de cada ponto é calculada por raio até tocar a peça.
+   - plaquinha com pezinho;
+   - 3 pinos.
+4. **Cartão:** as peças são distribuídas em linhas, e os pontos de destaque são criados por raio até tocar a peça.
+5. **Exportação:** uma malha unida por cor. O STL é **reaberto e validado**, e se houver defeito o processo para.
 
-### 4. Decisões de projeto
+### Decisões de projeto
 
-- **Fundo do cartão 100% plano e sem suporte.** As metades da carroceria deitam sobre a face de corte. Como a superfície externa sempre "olha para cima", não existe nenhum balanço.
-- **Menos trocas de cor, mais lucro.** Cada troca no AMS gasta filamento e tempo. Por isso:
-  - As peças coloridas pequenas são impressas **com a face visível para baixo**. O branco e o prata só aparecem nas **2 primeiras camadas**, e a face sai com o acabamento da mesa texturizada.
-  - Das camadas 3 a 23 são só vermelho e preto (os pneus). **Da camada 24 em diante, só vermelho**, sem nenhuma troca.
-  - Resultado: 30 trocas no total.
-- **As peças coloridas também seguram a carroceria.** Para-brisa, vidro traseiro, frente e painel traseiro atravessam as duas metades e ajudam a mantê-las unidas, além dos 3 pinos.
-- **Pinos deitados e achatados embaixo**, para imprimir com resistência. Os furos ficam na vertical na impressão, então saem redondos.
+**Arquitetura de montagem.** Foram comparadas duas alternativas:
 
-### 5. Montagem (resumo)
+| | A: duas metades (escolhida) | B: casca + chassi |
+|---|---|---|
+| Suportes | nenhum (a superfície externa sempre "olha para cima") | cavidades e tetos internos exigem pontes ou suporte |
+| Emenda visível | linha central no capô, teto e tampa | pode sumir nas linhas de painel |
+| Peças | 23 | mais (chassi, casca, travas) |
+| Risco / complexidade | baixo | maior (paredes finas, acesso) |
+| Estilo kit card | igual ao B-17 de referência | menos parecido |
 
-1. Destaque as peças (os pontos de destaque quebram com os dedos; lixe o resto se precisar).
-2. Coloque os 3 pinos de carroceria nos furos de uma das metades e feche com a outra metade.
-3. Encaixe a frente, o painel traseiro e os para-choques nos rebaixos.
-4. Encaixe os vidros. Nesta versão talvez precisem de uma gota de cola instantânea.
-5. Coloque os pinos de eixo e as rodas.
-6. Encaixe a plaquinha no pezinho.
+A foi escolhida porque é a única comprovadamente sem suporte e com menor risco. A emenda central fica registrada como ponto a avaliar na primeira impressão.
+
+**Cores e custo:**
+- **Relevo em cima:** frente, painel traseiro, rodas e plaquinha saem com a face de detalhe para cima.
+- **Para-choques com a face para baixo:** assim a face cromada sai com o acabamento liso da mesa.
+- **Onde ficam as trocas de cor:** as 4 cores só aparecem nas camadas 0–1 e 6, e da camada 24 em diante é só vermelho.
+
+**Encaixes, cada um com sua folga:**
+- **Carroceria:** 3 pinos justos.
+- **Eixos:** passam pelas duas metades e **giram livres**.
+- **Rodas:** **justas** no eixo. As duas rodas nas pontas impedem o eixo de sair.
+- **Vidros:** placas em rebaixo. Talvez precisem de cola; só a impressão vai dizer.
+
+**Limitações:**
+- **Piscas:** são brancos, porque o AMS lite tem só 4 slots e o âmbar seria uma 5ª cor.
+- **Não modelados nesta versão:**
+  - retrovisor, limpadores, calhas e tampa de combustível;
+  - logo e emblemas (por causa da marca).
 
 ---
 
-## Estrutura do repositório
+## Estrutura
 
 ```
-gol_kitcard.py      script principal: modelo, cartão, STL e renders (Blender)
-teste_folgas.py     plaquinha de teste de folgas
-gerar_tudo.ps1      roda tudo: Blender + fatiamento no Bambu Studio
-bambu_cfg/          perfis da A1 mini, do processo 0.20 mm e dos 4 filamentos (extraídos do Bambu Studio)
-saida/
-  gol_kitcard_A1mini.3mf   projeto fatiado, pronto para imprimir
-  gol_card_*.stl           peças do cartão separadas por cor
-  teste_folgas.stl         teste de folgas
-  gol_kitcard.blend        arquivo do Blender (para visualizar ou editar)
-  render_*.png             imagens
+gol_kitcard.py       modelo, cartão, validação de malha e renders (Blender)
+teste_folgas.py      cupom de calibração (importa gol_kitcard; verifica os furos)
+bambu_perfis.py      extrai os perfis oficiais da A1 mini (resolve inherits + include) e confere o G-code
+fatiar.py            fatia cupom e cartão e confere o G-code gerado -> saida/fatiamento.json
+gerar_tudo.ps1       roda tudo em sequência
+bambu_cfg/           perfis usados (gerados pelo bambu_perfis.py)
+referencias/         manifesto das fontes
+saida/               3MF fatiados, STLs por cor, .blend, renders, cartao.json, fatiamento.json
+CHANGELOG.md         o que mudou e por quê (ligado aos itens da auditoria)
+VALIDACAO.md         o que foi verificado, em que nível, e o que falta
 ```
 
-## Para regenerar
+## Regenerar
 
-Com o Blender 5.0 e o Bambu Studio instalados nos caminhos padrão:
+Com o Blender 5.0 e o Bambu Studio instalados nos caminhos padrão, rode:
 
 ```powershell
 .\gerar_tudo.ps1
 ```
 
-**Parâmetros principais** (no topo do `gol_kitcard.py`):
-
-| Parâmetro | O que controla | Padrão |
-|---|---|---|
-| `S` | Escala | 1/32 |
-| `NAME_TEXT` | Texto da plaquinha | "GOL 1980" |
-| `HOLE_EXTRA` | Folga dos furos dos pinos (calibrar com o teste) | 0,20 mm |
-| `PLATE_CLR` | Folga dos vidros nos rebaixos | 0,10 mm |
-| `CARD_W` | Largura do cartão | 172 mm |
-
-## Próximas versões
-
-- Ajustar as folgas depois do primeiro teste impresso.
-- Vincos do capô e da tampa traseira, piscas âmbar e aros mais detalhados.
-- Folha de instruções de montagem para acompanhar o produto.
-- Outros carros usando a mesma base.
+Qualquer falha de perfil, malha, cupom ou G-code interrompe o processo.
 
 ## Observação sobre marca
 
-"Gol" e o logo VW são marcas registradas da Volkswagen. O modelo não traz o logo. Para venda, avalie trocar o texto da plaquinha (`NAME_TEXT`) por um nome genérico e consulte alguém de propriedade intelectual.
+"Gol" e o logo VW são marcas da Volkswagen. O modelo não tem logo. Para vender, avalie trocar `NAME_TEXT` por um nome genérico e consulte alguém de propriedade intelectual. Verifique também o enquadramento no Inmetro: brinquedo × objeto de coleção.
